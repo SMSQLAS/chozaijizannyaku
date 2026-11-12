@@ -1,0 +1,58 @@
+【既存の Apps Script に追加するコード】
+
+既に自家製剤加算などのクイズで使用している Apps Script を開いてください。
+「function doPost(e) {」の直後（最初の行）に、次のコードをそのまま貼り付けます。
+既存の doPost を削除・上書きしないでください。既存のタブへの振り分けはそのまま残せます。
+
+----- ここからコピー -----
+  // ===== 調剤時残薬調整加算クイズの保存先 =====
+  const zannyakuData = JSON.parse((e && e.postData && e.postData.contents) || "{}");
+  const zannyakuTitle = String(zannyakuData.quizTitle || zannyakuData.quizName || zannyakuData.quiz || "");
+  if (zannyakuTitle.includes("調剤時残薬調整加算")) {
+    const zannyakuLock = LockService.getScriptLock();
+    zannyakuLock.waitLock(10000);
+    try {
+      const zannyakuSs = SpreadsheetApp.getActiveSpreadsheet();
+      const zannyakuSheet = zannyakuSs.getSheetByName("調剤時残薬") || zannyakuSs.insertSheet("調剤時残薬");
+      if (zannyakuSheet.getLastRow() === 0) {
+        zannyakuSheet.appendRow([
+          "送信日時", "クイズ名", "店舗名", "名前", "難易度", "得点",
+          "満点", "正答率", "誤答番号", "回答詳細", "回答時間(秒)"
+        ]);
+        zannyakuSheet.setFrozenRows(1);
+      }
+      zannyakuSheet.appendRow([
+        new Date(),
+        zannyakuTitle,
+        zannyakuData.storeName || zannyakuData.store || "",
+        zannyakuData.name || zannyakuData.userName || "",
+        zannyakuData.difficulty || "",
+        zannyakuData.score || "",
+        zannyakuData.total || 0,
+        zannyakuData.percent || 0,
+        zannyakuData.wrongAnswers || zannyakuData.answers || "なし",
+        zannyakuData.answerDetail || "",
+        zannyakuData.elapsedSeconds || 0
+      ]);
+    } finally {
+      zannyakuLock.releaseLock();
+    }
+    return ContentService.createTextOutput(JSON.stringify({ result: "ok", sheet: "調剤時残薬" }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  // ===== ここまで。以下は元の doPost の処理をそのまま残す =====
+----- ここまでコピー -----
+
+【保存後に必要な操作】
+1. Apps Script画面右上の「デプロイ」→「デプロイを管理」。
+2. 現在利用しているウェブアプリの右上の編集（鉛筆）を押す。
+3. 「バージョン」で「新しいバージョン」を選んでデプロイ。
+4. 既存URLが変わっていないことを確認する。
+5. GitHub Pages上のクイズを最後まで解き、テスト送信。
+6. スプレッドシートの「調剤時残薬」タブに1行増えたか確認する。
+
+【注意】
+- この追記だけではサイト公開はされません。index.html/style.css/script.js の3ファイルを GitHub に配置してください。
+- 同じApps Scriptが既存のクイズも受信している場合、doPost 関数を2つ作らないでください。
+- Webアプリのアクセス権限は従来の動作していた設定を引き継いでください。
+- もし既存のタブに独自の列見出しがある場合は、上の列構成と合わせてください。

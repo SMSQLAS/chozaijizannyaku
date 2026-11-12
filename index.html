@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#6d40b5">
+  <meta name="description" content="調剤時残薬調整加算の15問クイズ。算定可否や調剤管理料の区分を学べます。">
+  <title>調剤時残薬調整加算クイズ</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <main class="app-shell">
+    <section id="startScreen" class="card screen active" aria-labelledby="startTitle">
+      <span class="badge">薬局スタッフ向け 研修クイズ</span>
+      <h1 id="startTitle">💊 調剤時残薬調整加算クイズ</h1>
+      <p class="lead">残薬調整の算定可否や調剤管理料の区分を、実例を通して確認しましょう。</p>
+      <div class="intro-stat"><strong>全15問</strong><span>2択・3択・4択の組み合わせ</span></div>
+      <div class="intro-info">
+        <h2>進め方</h2>
+        <p>1問ずつ回答すると、その場で正誤と解説が表示されます。最後に店舗名・名前・難易度を入力して結果を送信します。</p>
+      </div>
+      <details class="rule-details">
+        <summary>算定ルールの早見表を確認する</summary>
+        <div class="rule-content">
+          <p><strong>原則：</strong>処方箋受付1回につき1回まで。残薬の状況と調整の必要性を確認した上で、原則7日分以上相当の変更が対象です。</p>
+          <p><strong>「7日分以上相当」：</strong>内服薬は7日分以上、屯服薬は7回分以上。隔日投与等は実際の服用日数で判断します。</p>
+          <p><strong>6日分以下：</strong>必要性のある特例では、理由の明細書記載、患者への説明、薬歴記録などの要件があります。</p>
+          <p><strong>区分：</strong>資料では、在宅患者等の区分イ・ロ・ハは50点、それ以外のニは30点とされています。</p>
+          <p class="fineprint">※添付の研修資料を要約しています。実際の算定では適用時点の通知・疑義解釈も確認してください。</p>
+        </div>
+      </details>
+      <button id="startButton" class="primary-button" type="button">クイズを開始する</button>
+    </section>
+
+    <section id="quizScreen" class="card screen" aria-labelledby="questionHeading">
+      <div class="progress-row"><span id="progressText">問題1 / 15</span><span id="scoreText">正解 0</span></div>
+      <div class="progress-track" role="progressbar" aria-label="進行状況" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0"><div id="progressBar" class="progress-bar"></div></div>
+      <p id="questionCategory" class="category-tag"></p>
+      <h2 id="questionHeading" class="question-heading">問題1</h2>
+      <div id="questionText" class="question"></div>
+      <div id="answerButtons" class="answer-buttons" role="group" aria-label="回答の選択肢"></div>
+      <div id="feedback" class="feedback hidden" aria-live="polite"></div>
+      <button id="nextButton" class="primary-button hidden" type="button">次の問題へ</button>
+    </section>
+
+    <section id="resultScreen" class="card screen" aria-labelledby="resultTitle">
+      <span class="badge">クイズ終了！</span>
+      <h2 id="resultTitle">お疲れさまでした！🎉</h2>
+      <p id="resultScore" class="result-score"></p>
+      <p id="resultDetail" class="result-detail"></p>
+      <form id="resultForm" novalidate>
+        <label class="form-label" for="storeName">店舗名</label>
+        <input id="storeName" name="storeName" type="text" maxlength="80" autocomplete="organization" required placeholder="例：○○薬局">
+        <label class="form-label" for="userName">名前</label>
+        <input id="userName" name="userName" type="text" maxlength="80" autocomplete="name" required placeholder="氏名を入力">
+        <fieldset class="difficulty-fieldset">
+          <legend>このクイズの難易度は？</legend>
+          <div class="difficulty-options">
+            <label><input type="radio" name="difficulty" value="簡単" required> 簡単</label>
+            <label><input type="radio" name="difficulty" value="ちょうどいい"> ちょうどいい</label>
+            <label><input type="radio" name="difficulty" value="難しい"> 難しい</label>
+          </div>
+        </fieldset>
+        <p id="formError" class="form-error hidden" role="alert"></p>
+        <button id="sendButton" class="primary-button" type="submit">結果を送信する</button>
+      </form>
+      <div id="sendStatus" class="send-status hidden" aria-live="polite"></div>
+      <button id="retryButton" class="secondary-button" type="button" disabled>もう一度する</button>
+      <p class="fineprint">※結果は店舗名・氏名とともに研修用スプレッドシートへ送信されます。</p>
+    </section>
+  </main>
+</body>
+</html>
